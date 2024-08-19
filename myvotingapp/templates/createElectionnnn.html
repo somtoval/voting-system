@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Election</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .formset-form {
+            margin-bottom: 20px;
+        }
+        .hidden-template {
+            display: none;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    {% extends 'main.html' %}
+    {% load static %}
+    {% block content %}
+    <div class="container mt-4">
+        <h2>Create Election</h2>
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          <!-- Display form errors -->
+          {% if election_form.non_field_errors %}
+            <div class="alert alert-danger">
+              <ul>
+                {% for error in election_form.non_field_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+          
+          <!-- Election Form -->
+          <div class="form-group">
+            {{ election_form.name.label_tag }}
+            {{ election_form.name }}
+            {% if election_form.name.errors %}
+              <div class="text-danger">
+                {% for error in election_form.name.errors %}
+                  <small>{{ error }}</small><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ election_form.description.label_tag }}
+            {{ election_form.description }}
+            {% if election_form.description.errors %}
+              <div class="text-danger">
+                {% for error in election_form.description.errors %}
+                  <small>{{ error }}</small><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ election_form.start_date.label_tag }}
+            {{ election_form.start_date }}
+            {% if election_form.start_date.errors %}
+              <div class="text-danger">
+                {% for error in election_form.start_date.errors %}
+                  <small>{{ error }}</small><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            {{ election_form.end_date.label_tag }}
+            {{ election_form.end_date }}
+            {% if election_form.end_date.errors %}
+              <div class="text-danger">
+                {% for error in election_form.end_date.errors %}
+                  <small>{{ error }}</small><br>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+    
+          <!-- Position Formset -->
+          {% if position_formset.non_form_errors %}
+            <div class="alert alert-danger">
+              <ul>
+                {% for error in position_formset.non_form_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+          {{ position_formset.management_form }}
+          {% for form in position_formset.forms %}
+            <div class="formset-form">
+              {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                  <ul>
+                    {% for error in form.non_field_errors %}
+                      <li>{{ error }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+              <div class="form-group">
+                {{ form.name.label_tag }}
+                {{ form.name }}
+                {% if form.name.errors %}
+                  <div class="text-danger">
+                    {% for error in form.name.errors %}
+                      <small>{{ error }}</small><br>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+    
+          <!-- Contestant Formset -->
+          {% if contestant_formset.non_form_errors %}
+            <div class="alert alert-danger">
+              <ul>
+                {% for error in contestant_formset.non_form_errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+          {{ contestant_formset.management_form }}
+          {% for form in contestant_formset.forms %}
+            <div class="formset-form">
+              {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                  <ul>
+                    {% for error in form.non_field_errors %}
+                      <li>{{ error }}</li>
+                    {% endfor %}
+                  </ul>
+                </div>
+              {% endif %}
+              <div class="form-group">
+                {{ form.elect.label_tag }}
+                {{ form.elect }}
+                {% if form.elect.errors %}
+                  <div class="text-danger">
+                    {% for error in form.elect.errors %}
+                      <small>{{ error }}</small><br>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+              <div class="form-group">
+                {{ form.position.label_tag }}
+                {{ form.position }}
+                {% if form.position.errors %}
+                  <div class="text-danger">
+                    {% for error in form.position.errors %}
+                      <small>{{ error }}</small><br>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          {% endfor %}
+    
+          <button type="submit" class="btn btn-primary">Create Election</button>
+        </form>
+      </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const positionFormsetContainer = document.getElementById('position-formset-container');
+                const contestantFormsetContainer = document.getElementById('contestant-formset-container');
+                const addPositionButton = document.getElementById('add-position-formset');
+                const addContestantButton = document.getElementById('add-contestant-formset');
+                const positionTotalForms = document.getElementById('id_positions-TOTAL_FORMS');
+                const contestantTotalForms = document.getElementById('id_contestants-TOTAL_FORMS');
+                const positionFormTemplate = document.getElementById('position-form-template').innerHTML;
+                const contestantFormTemplate = document.getElementById('contestant-form-template').innerHTML;
+
+                const updateContestantPositions = () => {
+                    const positionFields = positionFormsetContainer.querySelectorAll('input[name$="-name"]');
+                    const positionOptions = Array.from(positionFields).map(field => field.value);
+                    const contestantSelects = contestantFormsetContainer.querySelectorAll('select[name$="-position"]');
+                    contestantSelects.forEach(select => {
+                        while (select.firstChild) {
+                            select.removeChild(select.firstChild);
+                        }
+                        positionOptions.forEach(option => {
+                            const newOption = document.createElement('option');
+                            newOption.value = option;
+                            newOption.text = option;
+                            select.appendChild(newOption);
+                        });
+                    });
+                };
+
+                addPositionButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const newForm = document.createElement('div');
+                    newForm.innerHTML = positionFormTemplate.replace(/__prefix__/g, positionTotalForms.value);
+                    newForm.classList.add('formset-form');
+                    positionFormsetContainer.appendChild(newForm);
+                    positionTotalForms.value = parseInt(positionTotalForms.value) + 1;
+                    updateContestantPositions();
+                });
+
+                addContestantButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const newForm = document.createElement('div');
+                    newForm.innerHTML = contestantFormTemplate.replace(/__prefix__/g, contestantTotalForms.value);
+                    newForm.classList.add('formset-form');
+                    contestantFormsetContainer.appendChild(newForm);
+                    contestantTotalForms.value = parseInt(contestantTotalForms.value) + 1;
+                    updateContestantPositions();
+                });
+
+                updateContestantPositions();
+            });
+        </script>
+    {% endblock %}
+</body>
+</html>

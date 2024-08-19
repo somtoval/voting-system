@@ -1,0 +1,73 @@
+{% extends 'main.html' %}
+{% block content %}
+<div class="container-xl big-padding">
+    <h2 class="text-center">Create Election</h2><hr>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="id_name">Election Name</label>
+            <input type="text" name="name" id="id_name" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="id_description">Description</label>
+            <textarea name="description" id="id_description" class="form-control" rows="4" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="id_start_date">Start Date</label>
+            <input type="date" name="start_date" id="id_start_date" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="id_end_date">End Date</label>
+            <input type="date" name="end_date" id="id_end_date" class="form-control" required>
+        </div>
+
+        <!-- Dynamic positions section -->
+        <div id="positions-container">
+            <div class="position-form">
+                <div class="form-group">
+                    <label for="id_positions-0-name">Position</label>
+                    <input type="text" name="positions" id="id_positions-0-name" class="form-control" required>
+                </div>
+            </div>
+        </div>
+        <button type="button" id="add-position" class="btn btn-secondary btn-block">Add Position</button>
+        <br><br>
+
+        <button type="submit" class="btn btn-primary">Save Election</button><br><br>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DOMContentLoaded event fired");
+
+        const positionsContainer = document.getElementById('positions-container');
+        const addPositionButton = document.getElementById('add-position');
+
+        if (positionsContainer && addPositionButton) {
+            console.log("Positions container and add position button found");
+
+            let positionFormCount = 1;
+
+            addPositionButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log("Add position button clicked");
+
+                const newForm = document.createElement('div');
+                newForm.classList.add('position-form');
+                newForm.innerHTML = `
+                    <div class="form-group">
+                        <label for="id_positions-${positionFormCount}-name">Position</label>
+                        <input type="text" name="positions" id="id_positions-${positionFormCount}-name" class="form-control" required>
+                    </div>
+                `;
+                positionsContainer.appendChild(newForm);
+
+                positionFormCount++;
+            });
+        } else {
+            console.error("Positions container or add position button not found");
+        }
+    });
+</script>
+{% endblock content %}

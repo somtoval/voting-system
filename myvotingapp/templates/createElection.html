@@ -1,0 +1,88 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+        }
+        .formset-form {
+            margin-bottom: 20px;
+        }
+        .hidden-template {
+            display: none;
+        }
+    </style>
+
+    <div class="form-container">
+        <h2 class="text-center">Create Election</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ election_form.as_p }}
+            <h3>Contestants</h3>
+            <div id="formset-container">
+                {{ contestant_formset.management_form }}
+                {% for form in contestant_formset %}
+                    <div class="formset-form">
+                        {{ form.as_p }}
+                    </div>
+                {% endfor %}
+            </div>
+            <div id="form-template" class="hidden-template">
+                <div class="formset-form">
+                    {{ contestant_formset.empty_form.as_p }}
+                </div>
+            </div>
+            <div class="text-center">
+                <button id="add-formset" class="btn btn-secondary mb-3">Add another contestant</button>
+                <button type="submit" class="btn btn-primary">Save Election</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("DOMContentLoaded event fired");
+
+            const formsetContainer = document.getElementById('formset-container');
+            const addButton = document.getElementById('add-formset');
+            const totalForms = document.getElementById('id_contestant_set-TOTAL_FORMS');
+            const formTemplate = document.getElementById('form-template').innerHTML;
+
+            if (formsetContainer && addButton && totalForms) {
+                console.log("Formset container, add button, and total forms found");
+
+                let formCount = parseInt(totalForms.value);
+                console.log("Initial form count:", formCount);
+
+                addButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log("Add button clicked");
+
+                    const newForm = document.createElement('div');
+                    newForm.innerHTML = formTemplate.replace(/__prefix__/g, formCount);
+                    newForm.classList.add('formset-form');
+                    formsetContainer.appendChild(newForm);
+
+                    formCount++;
+                    totalForms.value = formCount;
+
+                    console.log("New form added, updated form count:", formCount);
+                    console.log("New form HTML:", newForm.outerHTML);
+                });
+            } else {
+                console.error("One or more elements not found:", {
+                    formsetContainer,
+                    addButton,
+                    totalForms
+                });
+            }
+        });
+    </script>
+
+{% endblock %}
+    

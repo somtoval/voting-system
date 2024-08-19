@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Contestants</title>
+</head>
+<body>
+    <h2>Create Contestants for {{ position.name }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {% for form in formset %}
+            {{ form.as_p }}
+            {% for error in form.errors %}
+                <div class="error">{{ error }}</div>
+            {% endfor %}
+        {% endfor %}
+        <button type="submit">Save</button>
+    </form>
+</body>
+</html>

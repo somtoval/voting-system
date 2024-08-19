@@ -1,0 +1,97 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<br>
+
+<div class="container-xl big-padding">
+    
+    <div class="row">
+        <div class="col">
+            <div class="col-md">
+                <div class="card text-center text-white mb-3" id="total-orders">
+                    <div class="card-header">
+                        <h5 class="card-title">Total Ongoing Elections</h5>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">{{total_ongoing}}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <div class="col">
+            <div class="col-md">
+                <div class="card text-center text-white mb-3" id="orders-delivered">
+                    <div class="card-header">
+                        <h5 class="card-title">Total Voted Elections</h5>
+                    </div>
+                    <div class="card-body">
+                        <h3 class="card-title">{{total_voted}}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row section-title">
+        {% if elections %}
+        <h2 class="fs-4">Ongoing Elections</h2>
+        <p>...these are the elections that are still in progress that you haven't voted in</p>
+
+        <div class="row">
+            <div class="">
+                <br>
+                {% for election in elections %}
+                    <h1><a href="{% url 'viewElection' election.id %}">+ {{election.name}}</a></h1><br>
+                    {% if role == 'admin' %}
+                        <a href="{% url 'delete_election' election.id %}" class="btn btn-danger fw-bolder px-4 ms-2 fs-8">Delete</a>
+                    {% endif %}<hr>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <h2 class="fs-4">No Pending Elections</h2>
+        <p>...you have no ongoing elections that you have not voted in</p>
+        {% endif %}
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h5>Voted Elections</h5>
+            <hr>
+    
+            <div class="card card-body">
+                {% for voted_election in voted_elections %}
+                <h6><a href="{% url 'viewVotes' voted_election.id %}">{{voted_election.name}}</a></h6>
+                <!-- <table class="table table-sm">
+                    {% for position in voted_election.... %}
+                    <tr>
+                        <th></th>
+                        <th>Position</th>
+                        <th>Winner</th>
+                    </tr>
+                    {% endfor %}
+                </table> -->
+                <hr>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    {% if role == 'admin' %}
+    <div class="col-md">
+        <div class="card card-body">
+            <h5>Admin Priviledges: </h5>
+            <hr>
+            <a class="btn btn-outline-info btn-sm btn-block" href="{% url 'create_election' %}">Start Election</a>
+            <!-- <a class="btn btn-outline-info btn-sm btn-block" href="">Update Customer</a>
+            <a class="btn btn-outline-danger btn-sm btn-block" href="">Delete Customer</a> -->
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

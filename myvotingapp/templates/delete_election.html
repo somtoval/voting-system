@@ -1,0 +1,12 @@
+{% extends 'main.html' %}
+{% block content %}
+<div class="container-xl big-padding">
+    <h2>Delete Election</h2>
+    <p>Are you sure you want to delete the election "{{ election.name }}"?</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'viewElection' pk=election.pk %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock content %}

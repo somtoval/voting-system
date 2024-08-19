@@ -1,0 +1,63 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+<div class="container-xl big-padding">
+    <div class="row section-title">
+        <h2 class="fs-4">{{ election.name }}</h2>
+        <p>{{ election.description }}</p>
+    </div>
+
+    <form id="voting-form" method="post">
+        {% csrf_token %}
+        <div class="row"><hr>
+            {% for position in positions %}
+                <h4 class="mt-3 fs-5 mb-1 fw-bold">{{ position }}</h4>
+                {% for contestant in position.contestant_set.all %}
+                    {% if contestant.election == election %}
+                        <div class="col-lg-4 col-md-6" data-position="{{ position }}">
+                            <div class="text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
+                                <!-- <img class="rounded-pill shadow-md p-2" src="{{ contestant.student.profile_pic.imageURL }}" alt="{{ contestant.student.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;"> -->
+                                {% if contestant.student.profile_pic %}
+                                    <img class="rounded-pill shadow-md p-2" src="{{ contestant.student.imageURL }}" alt="{{ contestant.student.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                                {% else %}
+                                    <div class="rounded-pill shadow-md p-2 bg-light" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                                        <span class="text-muted">No Image</span>
+                                    </div>
+                                {% endif %}
+                                <h4 class="mt-3 fs-5 mb-1 fw-bold">{{ contestant.student }}</h4>
+                                <h6 class="fs-7">Running for: <span class="text-primary fw-bold">{{ contestant.position }}</span></h6>
+                                <button type="button" class="vote-btn btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
+                                <input type="hidden" name="contestant_id" value="{{ contestant.id }}">
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}<hr>
+            {% endfor %}
+        </div>
+        <input class="btn btn-danger fw-bolder px-4 ms-2 fs-8" type="submit" value="Submit Votes">
+        {% if role == 'admin' %}
+            <a href="{% url 'add_contestant' pk=election.id %}" class="btn btn-success fw-bolder px-4 ms-2 fs-8">Add Contestants</a>
+        {% endif %}
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const voteButtons = document.querySelectorAll('.vote-btn');
+    voteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const position = button.closest('[data-position]').getAttribute('data-position');
+            document.querySelectorAll(`[data-position="${position}"] .vote-btn`).forEach(btn => {
+                btn.style.display = 'none'; // Hide all vote buttons in the same position
+            });
+
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'selected_candidates';
+            hiddenInput.value = button.nextElementSibling.value; // Assumes the hidden input is right after the button
+            document.getElementById('voting-form').appendChild(hiddenInput);
+        });
+    });
+});
+</script>
+{% endblock content %}

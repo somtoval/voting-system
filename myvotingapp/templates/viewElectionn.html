@@ -1,0 +1,88 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container-xl big-padding">
+    <!-- {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %} -->
+    
+    <div class="row section-title">
+        <h2 class="fs-4">{{election.name}}</h2>
+        <p>{{election.description}}</p>
+    </div>
+
+    <form id="voting-form" method="post">
+        {% csrf_token %}
+        <div class="row"><hr>
+            {% for position in positions %}
+                <h4 class="mt-3 fs-5 mb-1 fw-bold">{{ position }}</h4>
+                {% for contestant in position.contestant_set.all %}
+                    {% if contestant.election == election %}
+                        <div class="col-lg-4 col-md-6">
+                            <div class="text-white text-center mb-4 votcard shadow-md bg-white p-4 pt-5">
+                                <img class="rounded-pill shadow-md p-2" src="{{ contestant.elect.profile_pic.url }}" alt="{{ contestant.elect.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                                <h4 class="mt-3 fs-5 mb-1 fw-bold">{{ contestant.elect }}</h4>
+                                <h6 class="fs-7">Running for: <span class="text-primary fw-bold">{{ contestant.position }}</span></h6>
+                                <input type="hidden" name="contestant_id" value="{{ contestant.id }}">
+                                <button type="button" class="vote-btn btn btn-danger fw-bolder px-4 ms-2 fs-8">Vote</button>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}<hr>
+            {% endfor %}
+        </div>
+
+        <input class="btn btn-success fw-bolder px-4 ms-2 fs-8" type="submit" value="Submit Votes">
+    </form>
+</div>
+
+<script>
+    // This line adds an event listener to the DOMContentLoaded event, which fires when the initial HTML document has been completely loaded and parsed.
+    document.addEventListener('DOMContentLoaded', function() {
+        // This line selects all elements with the class vote-btn and stores them in a NodeList called voteButtons.
+        const voteButtons = document.querySelectorAll('.vote-btn');
+        // This line iterates over each element in the voteButtons NodeList using the forEach method, and for each element, it executes the provided function.
+        voteButtons.forEach(button => {
+            // This line adds a click event listener to each vote-btn element. When a vote-btn element is clicked, the provided function is executed.
+            button.addEventListener('click', function() {
+                // This line finds the closest ancestor element of the clicked button with the class votcard and stores it in the card variable.
+                const card = button.closest('.votcard');
+                // This line checks if the selected class is not present in the class list of the card element.
+                if (!card.classList.contains('selected')) {
+                    // This line adds the class selected to the class list of the card element.
+                    card.classList.add('selected');
+                    // This line selects all input elements with the name contestant_id that are descendants of elements with the class votcard and have the class selected.
+                    const selectedCandidates = document.querySelectorAll('.votcard.selected input[name="contestant_id"]');
+                    // This line iterates over each input element in the selectedCandidates NodeList using the forEach method, and for each element, it executes the provided function.
+                    selectedCandidates.forEach(candidateInput => {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'selected_candidates';
+                        hiddenInput.value = candidateInput.value;
+                        document.getElementById('voting-form').appendChild(hiddenInput);
+                    });
+                } else {
+                    card.classList.remove('selected');
+                    const selectedCandidates = document.querySelectorAll('.votcard:not(.selected) input[name="contestant_id"]');
+                    document.querySelectorAll('input[name="selected_candidates"]').forEach(input => input.remove());
+                    selectedCandidates.forEach(candidateInput => {
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'selected_candidates';
+                        hiddenInput.value = candidateInput.value;
+                        document.getElementById('voting-form').appendChild(hiddenInput);
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+{% endblock content %}
+   
+    

@@ -1,0 +1,22 @@
+{% extends 'main.html' %}
+{% block content %}
+    <body>
+        
+        <div class="container py-5 big-padding">
+            <form method="POST" action="">
+                <div class="row section-title">
+                    <h2 class="fs-5 text-center">Confirm Your Vote Before It Can Recorded!</h2>
+                    <p>Vote Summary:</p>
+                    {% for position, contestants in positions_and_contestants.items %}
+                        <h5>+ {{ position }}</h5>
+                        <ul>
+                            {% for contestant in contestants %}
+                                <li>{{ contestant }}</li>
+                            {% endfor %}
+                        </ul><hr>
+                    {% endfor %}
+                    <button type="button" class="vote-btn btn btn-primary fw-bolder px-4 ms-2 fs-8" name="submit-vote" value="{{}}">Confirm Vote</button>
+                </div>
+            </form>
+        </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'main.html' %}
+{% load static %}
+{% block content %}
+    <div class="container py-5 big-padding">
+        <div class="row section-title">
+            <h2 class="fs-5 text-center">As it Stands!</h2>
+            <p>...analysis of the vote and contestants according to their positions in the {{ election.name }}</p>
+        </div>
+        <div class="row mb-5">
+            {% for contestant in contestants %}
+            <div class="col-md-6 mb-4">
+                <div class="row shadow-md p-2 m-0 rounded shadow-md bg-white">
+                    <div class="col-md-3">
+                        {% if contestant.student.profile_pic %}
+                            <img class="rounded-pill shadow-md p-2" src="{{ contestant.student.imageURL }}" alt="{{ contestant.student.name }}" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%;">
+                        {% else %}
+                            <div class="rounded-pill shadow-md p-2 bg-light" style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; display: flex; justify-content: center; align-items: center;">
+                                <span class="text-muted">No Image</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-9 align-self-center">
+                        <small class="mt-3 fs-5 mb-1 fw-bold">{{ contestant.student }} for {{ contestant.position }}</small>
+                        <p class="fs-8 mb-2 fw-bold">Votes: {{ contestant.total_vote }}</p>
+                        <div class="progress">
+                            <div class="progress-bar bg-danger" role="progressbar" aria-label="Example with label" style="width: {{ contestant.vote_percentage }}%;" aria-valuenow="{{ contestant.vote_percentage }}" aria-valuemin="0" aria-valuemax="100">{{ contestant.vote_percentage|floatformat:2 }}%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+    

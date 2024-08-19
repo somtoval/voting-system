@@ -1,0 +1,30 @@
+
+
+{% extends 'main.html' %}
+{% block content %}
+    <body>
+        <div class="container py-5 big-padding">
+            <form method="POST" action="{% url 'submitVote' %}">
+                {% csrf_token %}
+                <div class="row section-title">
+                    <h2 class="fs-5 text-center">Confirm Your Vote for the {{ election }} Before It Can Recorded!</h2>
+                    <p>Vote Summary:</p>
+                    {% for position, contestants in positions_and_contestants.items %}
+                        <h5>+ {{ position }}</h5>
+                        <!-- Add hidden input field for each position -->
+                        <input type="hidden" name="positions[]" value="{{ position }}">
+                        <ul>
+                            {% for contestant in contestants %}
+                                <li>{{ contestant }}</li>
+                                <!-- Add hidden input field for each contestant -->
+                                <input type="hidden" name="contestants[]" value="{{ contestant }}">
+                            {% endfor %}
+                        </ul><hr>
+                    {% endfor %}
+                    <button type="submit" class="vote-btn btn btn-primary fw-bolder px-4 ms-2 fs-8" name="submit-vote" value="{{ election }}">Confirm Vote</button>
+                </div>
+            </form>
+        </div>
+    </body>
+{% endblock %}
+    
